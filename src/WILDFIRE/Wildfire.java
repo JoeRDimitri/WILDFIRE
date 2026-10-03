@@ -1,11 +1,11 @@
+package WILDFIRE;
 import java.util.Objects;
-
 
 public class Wildfire {
     //Static counter
     private static int numberOfWildFires=0;
     //Attributes
-    private long    fireID;
+    private final long    fireID;
     private String  fireName;
     private String  country;
     private String  region;
@@ -24,7 +24,7 @@ public class Wildfire {
     public boolean      get_evacuationRequired()    {return this.evacuationRequired;}
     public static int   get_numberOfWildFires()     {return numberOfWildFires;}
     // Setters
-    public void  set_fireID(long fid)                   {this.fireID = fid;}
+    // public void  set_fireID(long fid)                   {this.fireID = fid;}
     public void  set_fireName(String fn)                {this.fireName = fn;}
     public void  set_country(String co)                 {this.country = co;}
     public void  set_region(String re)                  {this.region = re;}
