@@ -1,5 +1,4 @@
 package WILDFIRE;
-import java.util.Objects;
 
 public class Wildfire {
     //Static counter

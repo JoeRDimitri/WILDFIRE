@@ -35,6 +35,15 @@ public class driver {
         }
     }
 
+    static boolean fireAlreadyExists(Wildfire[] arr, long fireID){
+        for(Wildfire wildfire : arr){
+            if(wildfire != null && wildfire.get_fireID() == fireID){
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static void main (String argsp[]){
         Scanner scanner = new Scanner(System.in);
         String main_interface = 
@@ -104,13 +113,67 @@ public class driver {
                         scanner.nextLine(); 
 
                         if(ampleSpace(WildfireDatabase,wildfiresToCreate)){
-                            String num_wildfires = "Please enter number of wildfires would you like to create: ";
-                            System.out.print(successful_message);
-                            int wildfiresToCreate_again = scanner.nextInt();
-                            scanner.nextLine(); 
-                            for(int i = 0; i<wildfiresToCreate_again; i++)
-                                int empty_index = findFirstEmptyIndex(WildfireDatabase);
+                            for(int i = 0; i<wildfiresToCreate; i++){
+                                System.out.print("Enter the fire ID: ");
+                                long fireID = scanner.nextLong();
+                                scanner.nextLine();
+                                while(fireAlreadyExists(WildfireDatabase, fireID)){
+                                    System.out.println("That fire ID already exists. Please enter a different ID.");
+                                    System.out.print("Enter the fire ID: ");
+                                    fireID = scanner.nextLong();
+                                    scanner.nextLine();
+                                }
 
+                                System.out.print("Enter the fire name: ");
+                                String fireName = scanner.nextLine();
+
+                                System.out.print("Enter the country: ");
+                                String country = scanner.nextLine();
+
+                                System.out.print("Enter the region: ");
+                                String region = scanner.nextLine();
+
+                                System.out.print("Enter the area burned: ");
+                                double areaBurned = scanner.nextDouble();
+                                scanner.nextLine();
+                                if(areaBurned<0){
+                                    System.out.println("Invalid negative value entered for area burned, converting to positive value.");
+                                    areaBurned = areaBurned * -1;
+                                }
+
+                                System.out.print("Enter the containment percentage: ");
+                                double containmentPercentage = scanner.nextDouble();
+                                scanner.nextLine();
+                                if(containmentPercentage<0){
+                                    System.out.println("Invalid negative value entered for containment percentage, rounding to 0%.");
+                                    containmentPercentage = 0;
+                                }
+                                if(containmentPercentage>100){
+                                    System.out.print("Invalid positive value over 100 entered for containment percentage, converting to positive value. Converting to 100%");
+                                    containmentPercentage = 100;
+                                }
+
+                                System.out.print("Enter the risk level (Low/Moderate/High/Extreme): ");
+                                String riskLevel = scanner.nextLine();
+                                riskLevel = riskLevel.toLowerCase();
+
+                                while(!riskLevel.equalsIgnoreCase("Low")&&!riskLevel.equalsIgnoreCase("Moderate")&&!riskLevel.equalsIgnoreCase("High")&&!riskLevel.equalsIgnoreCase("Extreme")){
+                                    System.out.print("Invalid input, enter the risk level (Low/Moderate/High/Extreme): ");
+                                    riskLevel = scanner.nextLine();
+                                }
+
+                                System.out.print("Is evacuation required? (true/false): ");
+                                boolean evacuationRequired = scanner.nextBoolean();
+                                scanner.nextLine();
+
+                                Wildfire wildfire = new Wildfire(fireID, fireName, country, region,
+                                        areaBurned, containmentPercentage, riskLevel, evacuationRequired);
+                                int emptySlot = 0;
+                                while(WildfireDatabase[emptySlot] != null){
+                                    emptySlot++;
+                                }
+                                WildfireDatabase[emptySlot] = wildfire;
+                            }
                         }
                         else{
                             
