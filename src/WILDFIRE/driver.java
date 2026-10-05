@@ -3,6 +3,38 @@ import java.util.Scanner;
 
 public class driver {
 
+    static int inUse(Wildfire[] arr){
+        int total_size_of_arr = arr.length;
+        int number_of_slots_inUse = 0;
+        for(int i = 0; i<total_size_of_arr; i ++){
+            if(arr[i] == null)
+                continue;
+            number_of_slots_inUse++;
+        }
+        return number_of_slots_inUse;
+    }
+
+    static boolean ampleSpace(Wildfire[] arr, int num_we_want_to_add){
+        int in_use = inUse(arr);
+        int relative_space = in_use;
+        int new_in_use = in_use + num_we_want_to_add;
+        int length_of_arr = arr.length;
+        int max_to_add = length_of_arr - relative_space;
+
+        if(in_use == length_of_arr){
+            System.out.println("The DB is at Max capacity. No more insertions");
+            return false;
+        }
+        if(new_in_use <= length_of_arr){
+            System.out.println("The DB space permits adding this number of Wildfires. Ample space is not guaranteed after transaction.");
+            return true;
+        }
+        else{                
+            System.out.println("The requested amount of insertion exceeds the DB Limits. The DB can only handle: "+max_to_add+" insertions.");
+            return false; 
+        }
+    }
+
     public static void main (String argsp[]){
         Scanner scanner = new Scanner(System.in);
         String main_interface = 
@@ -64,12 +96,26 @@ public class driver {
                                 }
                             }
                         }
-
                         consecutive_Incorrect_Attempts = 0;
-                        String successful_message = "Access granted. How many wildfires would you like to create? ";
-                        System.out.println(successful_message);
+
+                        String successful_message = "Access granted. How many wildfires would you like to create: ";
+                        System.out.print(successful_message);
                         int wildfiresToCreate = scanner.nextInt();
-                        scanner.nextLine(); // Consume the newline character
+                        scanner.nextLine(); 
+
+                        if(ampleSpace(WildfireDatabase,wildfiresToCreate)){
+                            String num_wildfires = "Please enter number of wildfires would you like to create: ";
+                            System.out.print(successful_message);
+                            int wildfiresToCreate_again = scanner.nextInt();
+                            scanner.nextLine(); 
+                            for(int i = 0; i<wildfiresToCreate_again; i++)
+                                int empty_index = findFirstEmptyIndex(WildfireDatabase);
+
+                        }
+                        else{
+                            
+                        }
+
                         
                         break;
                     case 2:
