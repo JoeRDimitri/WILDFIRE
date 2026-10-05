@@ -3,6 +3,7 @@ import java.util.Scanner;
 
 public class driver {
 
+    // Count how many database slots are currently occupied.
     static int inUse(Wildfire[] arr){
         int total_size_of_arr = arr.length;
         int number_of_slots_inUse = 0;
@@ -14,6 +15,7 @@ public class driver {
         return number_of_slots_inUse;
     }
 
+    // Check whether the requested insertion count can fit without exceeding the array capacity.
     static boolean ampleSpace(Wildfire[] arr, int num_we_want_to_add){
         int in_use = inUse(arr);
         int relative_space = in_use;
@@ -35,6 +37,7 @@ public class driver {
         }
     }
 
+    // Search the database to see whether this fire ID already exists.
     static boolean fireAlreadyExists(Wildfire[] arr, long fireID){
         for(Wildfire wildfire : arr){
             if(wildfire != null && wildfire.get_fireID() == fireID){
@@ -45,6 +48,7 @@ public class driver {
         
     }
 
+    // Keep prompting until the user enters a valid numeric choice within the allowed range.
     static int readChoice(Scanner scanner, String prompt, int min, int max){
         while(true){
             System.out.print(prompt);
@@ -62,6 +66,7 @@ public class driver {
         }
     }
 
+    // Display the details of one wildfire in a readable format.
     static void displayWildfire(int index, Wildfire wildfire){
         String riskLevel = wildfire.get_riskLevel();
         riskLevel = riskLevel.substring(0, 1).toUpperCase() + riskLevel.substring(1).toLowerCase();
@@ -76,6 +81,7 @@ public class driver {
         System.out.println("Evacuation Required: " + wildfire.get_evacuationRequired());
     }
 
+    // Find and print all wildfire records that belong to a specific country.
     static int findWildfiresByCountry(Wildfire[] database, String country){
         int matches = 0;
         for(int i = 0; i < database.length; i++){
@@ -88,6 +94,7 @@ public class driver {
         return matches;
     }
 
+    // Main application loop manages the user interface and all wildfire operations.
     public static void main (String argsp[]){
         Scanner scanner = new Scanner(System.in);
         String main_interface = 
@@ -121,6 +128,7 @@ public class driver {
                 try{
                 switch(choice){
                     case 1:
+                        // Verify admin access before allowing wildfire creation.
                         String passwordInput = "Enter a password to create a new wildfire: ";
                         System.out.print(passwordInput);
                         String userPassword = scanner.nextLine();
@@ -151,6 +159,7 @@ public class driver {
                         }
                         consecutive_Incorrect_Attempts = 0;
 
+                        // Ask for the number of wildfire records to add and then collect each one.
                         String successful_message = "Access granted. How many wildfires would you like to create: ";
                         System.out.print(successful_message);
                         int wildfiresToCreate = scanner.nextInt();
@@ -178,23 +187,40 @@ public class driver {
                                 String region = scanner.nextLine();
 
                                 System.out.print("Enter the area burned: ");
-                                double areaBurned = scanner.nextDouble();
-                                scanner.nextLine();
+                                double areaBurned;
+                                while(true){
+                                    String areaBurnedInput = scanner.nextLine();
+                                    try{
+                                        areaBurned = Double.parseDouble(areaBurnedInput);
+                                        if(!Double.isNaN(areaBurned) && !Double.isInfinite(areaBurned)){
+                                            break;
+                                        }
+                                    }
+                                    catch(NumberFormatException e){
+                                        // Continue prompting until the value is a valid number.
+                                    }
+                                    System.out.print("Invalid input. Enter the area burned: ");
+                                }
                                 if(areaBurned<0){
                                     System.out.println("Invalid negative value entered for area burned, converting to positive value.");
                                     areaBurned = areaBurned * -1;
                                 }
 
                                 System.out.print("Enter the containment percentage: ");
-                                double containmentPercentage = scanner.nextDouble();
-                                scanner.nextLine();
-                                if(containmentPercentage<0){
-                                    System.out.println("Invalid negative value entered for containment percentage, rounding to 0%.");
-                                    containmentPercentage = 0;
-                                }
-                                if(containmentPercentage>100){
-                                    System.out.print("Invalid positive value over 100 entered for containment percentage, converting to positive value. Converting to 100%");
-                                    containmentPercentage = 100;
+                                double containmentPercentage;
+                                while(true){
+                                    String containmentInput = scanner.nextLine();
+                                    try{
+                                        containmentPercentage = Double.parseDouble(containmentInput);
+                                        if(!Double.isNaN(containmentPercentage) && !Double.isInfinite(containmentPercentage)
+                                                && containmentPercentage >= 0 && containmentPercentage <= 100){
+                                            break;
+                                        }
+                                    }
+                                    catch(NumberFormatException e){
+                                        // Continue prompting until the value is a valid number.
+                                    }
+                                    System.out.print("Invalid input. Enter a containment percentage between 0 and 100: ");
                                 }
 
                                 System.out.print("Enter the risk level (Low/Moderate/High/Extreme): ");
@@ -207,8 +233,19 @@ public class driver {
                                 }
 
                                 System.out.print("Is evacuation required? (true/false): ");
-                                boolean evacuationRequired = scanner.nextBoolean();
-                                scanner.nextLine();
+                                boolean evacuationRequired;
+                                while(true){
+                                    String evacuationInput = scanner.nextLine();
+                                    if(evacuationInput.equalsIgnoreCase("true")){
+                                        evacuationRequired = true;
+                                        break;
+                                    }
+                                    if(evacuationInput.equalsIgnoreCase("false")){
+                                        evacuationRequired = false;
+                                        break;
+                                    }
+                                    System.out.print("Invalid input. Enter true or false: ");
+                                }
 
                                 Wildfire wildfire = new Wildfire(fireID, fireName, country, region,
                                         areaBurned, containmentPercentage, riskLevel, evacuationRequired);
@@ -226,6 +263,7 @@ public class driver {
                         
                         break;
                     case 2:
+                        // Confirm access before updating any existing wildfire record.
                         boolean accessGranted = false;
                         for(int attempt = 1; attempt <= 3; attempt++){
                             System.out.print("Enter a password to update an existing wildfire: ");
@@ -375,6 +413,7 @@ public class driver {
                         }
                         break;
                     case 3:
+                        // Search the database by country and print any matching wildfires.
                         System.out.print("Enter a country name: ");
                         String country = scanner.nextLine().trim();
                         if(findWildfiresByCountry(WildfireDatabase, country) == 0){
@@ -382,6 +421,7 @@ public class driver {
                         }
                         break;
                     case 4:
+                        // Display all wildfire records whose containment level is at or below the chosen threshold.
                         double maximumContainment;
                         while(true){
                             System.out.print("Enter a maximum containment percentage (0.0-100.0): ");
