@@ -88,12 +88,12 @@ public class Wildfire {
         // 4. Compare fields (using Objects.equals for objects to prevent NullPointerException)
         return ( 
             get_fireID()                == other.get_fireID()                &&
-            get_fireName()              == other.get_fireName()              &&
-            get_country()               == other.get_country()               &&
-            get_region()                == other.get_region()                &&
+            get_fireName()              .equals(other.get_fireName())        &&
+            get_country()               .equals(other.get_country())         &&
+            get_region()                .equals(other.get_region())          &&
             get_areaBurned()            == other.get_areaBurned()            &&
             get_containmentPercentage() == other.get_containmentPercentage() &&
-            get_riskLevel()             == other.get_riskLevel()             &&
+            get_riskLevel()             .equals(other.get_riskLevel())       &&
             get_evacuationRequired()    == other.get_evacuationRequired()    
         );
     }

@@ -3,21 +3,9 @@ import java.util.Scanner;
 
 public class driver {
 
-    // Count how many database slots are currently occupied.
-    static int inUse(Wildfire[] arr){
-        int total_size_of_arr = arr.length;
-        int number_of_slots_inUse = 0;
-        for(int i = 0; i<total_size_of_arr; i ++){
-            if(arr[i] == null)
-                continue;
-            number_of_slots_inUse++;
-        }
-        return number_of_slots_inUse;
-    }
-
     // Check whether the requested insertion count can fit without exceeding the array capacity.
     static boolean ampleSpace(Wildfire[] arr, int num_we_want_to_add){
-        int in_use = inUse(arr);
+        int in_use = Wildfire.get_numberOfWildFires();
         int relative_space = in_use;
         int new_in_use = in_use + num_we_want_to_add;
         int length_of_arr = arr.length;
@@ -44,8 +32,7 @@ public class driver {
                 return true;
             }
         }
-        return false;
-        
+        return false;   
     }
 
     // Keep prompting until the user enters a valid numeric choice within the allowed range.
@@ -66,28 +53,13 @@ public class driver {
         }
     }
 
-    // Display the details of one wildfire in a readable format.
-    static void displayWildfire(int index, Wildfire wildfire){
-        String riskLevel = wildfire.get_riskLevel();
-        riskLevel = riskLevel.substring(0, 1).toUpperCase() + riskLevel.substring(1).toLowerCase();
-        System.out.println("Wildfire: #" + index);
-        System.out.println("Fire ID: " + wildfire.get_fireID());
-        System.out.println("Fire Name: " + wildfire.get_fireName());
-        System.out.println("Country: " + wildfire.get_country());
-        System.out.println("Region: " + wildfire.get_region());
-        System.out.println("Area Burned: " + wildfire.get_areaBurned() + " hectares");
-        System.out.println("Containment Percentage: " + wildfire.get_containmentPercentage() + " %");
-        System.out.println("Risk Level: " + riskLevel);
-        System.out.println("Evacuation Required: " + wildfire.get_evacuationRequired());
-    }
-
     // Find and print all wildfire records that belong to a specific country.
     static int findWildfiresByCountry(Wildfire[] database, String country){
         int matches = 0;
         for(int i = 0; i < database.length; i++){
             Wildfire wildfire = database[i];
             if(wildfire != null && wildfire.get_country().equalsIgnoreCase(country)){
-                displayWildfire(i, wildfire);
+                System.out.println(wildfire);
                 matches++;
             }
         }
@@ -128,7 +100,7 @@ public class driver {
                 try{
                 switch(choice){
                     case 1:
-                        // Verify admin access before allowing wildfire creation.
+                        // Verify password before allowing wildfire creation.
                         String passwordInput = "Enter a password to create a new wildfire: ";
                         System.out.print(passwordInput);
                         String userPassword = scanner.nextLine();
@@ -192,7 +164,7 @@ public class driver {
                                     String areaBurnedInput = scanner.nextLine();
                                     try{
                                         areaBurned = Double.parseDouble(areaBurnedInput);
-                                        if(!Double.isNaN(areaBurned) && !Double.isInfinite(areaBurned)){
+                                        if(!Double.isNaN(areaBurned)||areaBurned<0){
                                             break;
                                         }
                                     }
@@ -201,19 +173,13 @@ public class driver {
                                     }
                                     System.out.print("Invalid input. Enter the area burned: ");
                                 }
-                                if(areaBurned<0){
-                                    System.out.println("Invalid negative value entered for area burned, converting to positive value.");
-                                    areaBurned = areaBurned * -1;
-                                }
-
                                 System.out.print("Enter the containment percentage: ");
                                 double containmentPercentage;
                                 while(true){
                                     String containmentInput = scanner.nextLine();
                                     try{
                                         containmentPercentage = Double.parseDouble(containmentInput);
-                                        if(!Double.isNaN(containmentPercentage) && !Double.isInfinite(containmentPercentage)
-                                                && containmentPercentage >= 0 && containmentPercentage <= 100){
+                                        if(!Double.isNaN(containmentPercentage) && containmentPercentage >= 0 && containmentPercentage <= 100){
                                             break;
                                         }
                                     }
@@ -225,7 +191,6 @@ public class driver {
 
                                 System.out.print("Enter the risk level (Low/Moderate/High/Extreme): ");
                                 String riskLevel = scanner.nextLine();
-                                riskLevel = riskLevel.toLowerCase();
 
                                 while(!riskLevel.equalsIgnoreCase("Low")&&!riskLevel.equalsIgnoreCase("Moderate")&&!riskLevel.equalsIgnoreCase("High")&&!riskLevel.equalsIgnoreCase("Extreme")){
                                     System.out.print("Invalid input, enter the risk level (Low/Moderate/High/Extreme): ");
@@ -246,7 +211,8 @@ public class driver {
                                     }
                                     System.out.print("Invalid input. Enter true or false: ");
                                 }
-
+                                
+                                //Find a spot to insert into db
                                 Wildfire wildfire = new Wildfire(fireID, fireName, country, region,
                                         areaBurned, containmentPercentage, riskLevel, evacuationRequired);
                                 int emptySlot = 0;
@@ -294,6 +260,7 @@ public class driver {
                             }
 
                             int wildfireIndex = -1;
+                            
                             for(int i = 0; i < WildfireDatabase.length; i++){
                                 if(WildfireDatabase[i] != null && WildfireDatabase[i].get_fireID() == fireID){
                                     wildfireIndex = i;
@@ -313,7 +280,7 @@ public class driver {
                             }
 
                             Wildfire wildfire = WildfireDatabase[wildfireIndex];
-                            displayWildfire(wildfireIndex, wildfire);
+                            System.out.println(wildfire);
                             boolean updating = true;
                             while(updating){
                                 int updateChoice = readChoice(scanner,
@@ -408,7 +375,7 @@ public class driver {
                                         returnToMainMenu = true;
                                         continue;
                                 }
-                                displayWildfire(wildfireIndex, wildfire);
+                                System.out.println(wildfire);
                             }
                         }
                         break;
@@ -441,7 +408,7 @@ public class driver {
                         for(int i = 0; i < WildfireDatabase.length; i++){
                             Wildfire wildfire = WildfireDatabase[i];
                             if(wildfire != null && wildfire.get_containmentPercentage() <= maximumContainment){
-                                displayWildfire(i, wildfire);
+                                System.out.println(wildfire);
                                 matchingWildfires++;
                             }
                         }
